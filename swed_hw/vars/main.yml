@@ -1,0 +1,9 @@
+app_user: opadm
+oracle_user: swed_hw
+service_name: XEPDB1
+db_host_name: demo_db_server
+db_port: 1528
+client_base: /opt/oracle
+ld_library_path: /opt/oracle/instantclient_21_5
+client_home: /opt/oracle/instantclient_21_5
+sql_path: /opt/oracle/sql 

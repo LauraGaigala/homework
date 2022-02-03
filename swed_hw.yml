@@ -1,0 +1,32 @@
+---
+# Installs instant client and sqlplus on app server
+# executes sql scripts for data creation and generates csv output
+#  Example run:
+#      ansible-playbook -i inventory/hosts swed_hw.yml
+#   or for one server
+#      ansible-playbook -i "hostname," swed_hw.yml
+#
+#  Remarks:
+#  For detailed info read README.md 
+#  In short:
+#     adjust variables under vars dir to match real situation 
+#     you will be prompted for oracle db user password
+#
+
+- name: SWED Home Work
+  hosts: all
+  become: yes
+  become_user: "{{ app_user }}"
+  gather_facts: yes
+
+  vars_prompt:
+
+    - name: ora_password
+      prompt: "Enter password for oracle db user {{ oracle_user }}"
+
+  vars_files:
+    - swed_hw/vars/main.yml
+
+  roles:
+    - swed_hw
+

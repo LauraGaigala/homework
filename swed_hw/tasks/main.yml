@@ -1,0 +1,54 @@
+- name: Create /opt/oracle directory
+  file:
+    path: "{{ client_base }}"
+    state: directory
+    mode: 0775
+
+- name: Copy/extract db client
+  unarchive:
+    src: instantclient-basiclite-linux.x64-21.5.0.0.0dbru.zip
+    dest: "{{ client_base }}"
+
+- name: Copy/extract db client
+  unarchive:
+    src: instantclient-sqlplus-linux.x64-21.5.0.0.0dbru.zip
+    dest: "{{ client_base }}" 
+
+- name: Generate and copy tnsnames.ora
+  template:
+    src: tnsnames.ora.j2
+    dest: /opt/oracle/instantclient_21_5/network/admin/tnsnames.ora
+    mode: 0644
+
+- name: Copy sql dir and files 
+  copy:
+    src: sql
+    dest: "{{ client_base }}"
+
+- name: Execute demo_data.sql using sqlplus
+  shell: '{{ client_home }}/sqlplus -S {{ oracle_user }}/{{ ora_password }}@{{ service_name }}  @demo_data.sql'
+  environment:
+    LD_LIBRARY_PATH: "{{ld_library_path}}"
+    CLIENT_HOME: "{{client_home}}"
+  args:
+    chdir: "{{sql_path}}"
+  register: sqlout
+  failed_when: "'ORA-' in sqlout.stdout"
+
+- debug:
+   var: sqlout.stdout
+
+- name: Execute export_data.sql using sqlplus
+  shell: '{{ client_home }}/sqlplus -S {{ oracle_user }}/{{ ora_password }}@{{ service_name }}  @export_data.sql'
+  environment:
+    LD_LIBRARY_PATH: "{{ld_library_path}}"
+    CLIENT_HOME: "{{client_home}}"
+  args:
+    chdir: "{{sql_path}}"
+
+- name: Copy gathered_data.csv
+  fetch:
+    src: /opt/oracle/gathered_data.csv
+    dest: /tmp/gathered_data.csv
+    flat: yes
+
