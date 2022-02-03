@@ -1,0 +1,2 @@
+create user {{ oracle_user }} identified by {{ ora_password }} default tablespace users temporary tablespace temp;
+grant connect, create table, create sequence, unlimited tablespace to {{ oracle_user}};
